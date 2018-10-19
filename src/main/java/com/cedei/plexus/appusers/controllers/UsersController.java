@@ -1,7 +1,6 @@
 package com.cedei.plexus.appusers.controllers;
 
 import java.util.List;
-import java.util.Optional;
 
 import com.cedei.plexus.appusers.db.UserRepository;
 import com.cedei.plexus.appusers.exceptions.java.EmptyBodyException;
@@ -24,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * AppUsersController
+ * UsersController
  */
 @RestController
 @RequestMapping("/api/users")
@@ -88,7 +87,7 @@ public class UsersController {
         try {
             User toRemove = existsUser(id, true);
             userRepository.deleteById(id);
-            response = new ResponseEntity<User>(toRemove, HttpStatus.OK);
+            response = new ResponseEntity<String>(String.format("User %d has been deleted sucsessfully",toRemove.getId()), HttpStatus.OK);
         } catch (UserExistException e) {
             System.out.println(e.getMessage());
             response = new ResponseEntity<NotFoundExeption>(new NotFoundExeption(e.getMessage()), HttpStatus.NOT_FOUND);
