@@ -7,6 +7,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
+ * Controller
+ * 
  * Clase padre de todos los controladores de la api
  * 
  * @author Ayoze Martin Hdez

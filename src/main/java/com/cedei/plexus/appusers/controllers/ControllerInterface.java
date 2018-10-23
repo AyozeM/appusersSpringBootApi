@@ -4,7 +4,9 @@ import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 
 /**
- * controllerInterface
+ * ControllerInterface
+ * 
+ * Interfaz para controladores
  * 
  * @author Ayoze Martin Hdez
  * @version 0.0.1

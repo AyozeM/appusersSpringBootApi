@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 /**
+ * UserRepository
+ * 
  * Respositorio de usuarios
  * 
  * Servirá para almacenar los usuarios de la base de datos

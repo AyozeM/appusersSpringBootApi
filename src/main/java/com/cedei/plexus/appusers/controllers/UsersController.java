@@ -28,6 +28,8 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
 /**
+ * UsersController
+ * 
  * Cotrolador de usuarios
  * 
  * @author Ayoze Martin Hdez

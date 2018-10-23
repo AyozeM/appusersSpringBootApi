@@ -28,6 +28,8 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
 /**
+ * PrivilegesController
+ * 
  * Controlador de privilegios
  * 
  * @author Ayoze Martin Hdez
