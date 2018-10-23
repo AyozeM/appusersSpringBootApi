@@ -5,50 +5,63 @@ import java.util.Date;
 import org.springframework.http.HttpStatus;
 
 /**
- * RestException
+ * RestException Clase padre de las excepciones que se devolverán al usuario
+ * 
+ * @author Ayoze Martin Hdez
+ * @version 0.0.1
  */
-public class RestException {
+public abstract class RestException {
 
+    /**
+     * Mensaje para el usuario
+     */
     protected String message;
+
+    /**
+     * Código HTTO
+     */
     protected HttpStatus status;
+
+    /**
+     * Fecha en la que se origino la excepcion
+     */
     protected Date date;
 
+    /**
+     * Constructor
+     * 
+     * @param status estado http
+     */
     public RestException(HttpStatus status) {
         this.status = status;
         this.date = new Date();
     }
 
+    /**
+     * Getter de mensaje
+     * 
+     * @return mensaje
+     */
     public String getMessage() {
         return this.message;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
+    /**
+     * Getter para el estado
+     * 
+     * @return estado
+     */
     public HttpStatus getStatus() {
         return this.status;
     }
 
-    public void setStatus(HttpStatus status) {
-        this.status = status;
-    }
-
-    public RestException message(String message) {
-        this.message = message;
-        return this;
-    }
-
-    public RestException state(HttpStatus state) {
-        this.status = state;
-        return this;
-    }
-
+    /**
+     * Getter para la fecha
+     * 
+     * @return fecha
+     */
     public Date getDate() {
         return this.date;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
-    }
 }
