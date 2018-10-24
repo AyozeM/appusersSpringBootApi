@@ -4,15 +4,17 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
-
-
 
 /**
  * User
@@ -48,19 +50,23 @@ public class User implements Serializable {
     /**
      * Lista de roles asociados
      */
-    @ManyToMany(mappedBy = "users")
+
+    @ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
+    @JoinTable(name = "role_user", joinColumns = { @JoinColumn(name = "id_role") }, inverseJoinColumns = {
+            @JoinColumn(name = "id_user") })
     private List<Role> roles = new ArrayList<>();
 
     /**
      * Cosntructor
      */
     public User() {
-        //empty
+        // empty
     }
 
     /**
      * Constructor
-     * @param name nombre
+     * 
+     * @param name  nombre
      * @param email email
      */
     public User(String name, String email) {
@@ -70,6 +76,7 @@ public class User implements Serializable {
 
     /**
      * Getter de id
+     * 
      * @return id
      */
     public Integer getId() {
@@ -78,6 +85,7 @@ public class User implements Serializable {
 
     /**
      * Setter de id
+     * 
      * @param id id
      */
     public void setId(Integer id) {
@@ -86,6 +94,7 @@ public class User implements Serializable {
 
     /**
      * Getter de nombre
+     * 
      * @return nombre
      */
     public String getName() {
@@ -94,6 +103,7 @@ public class User implements Serializable {
 
     /**
      * Setter de nombre
+     * 
      * @param name nombre
      */
     public void setName(String name) {
@@ -102,6 +112,7 @@ public class User implements Serializable {
 
     /**
      * Getter de email
+     * 
      * @return email
      */
     public String getEmail() {
@@ -110,6 +121,7 @@ public class User implements Serializable {
 
     /**
      * Setter de email
+     * 
      * @param email email
      */
     public void setEmail(String email) {
@@ -118,6 +130,7 @@ public class User implements Serializable {
 
     /**
      * Getter de lista de roles
+     * 
      * @return lista de roles
      */
     public List<Role> getRoles() {
@@ -126,6 +139,7 @@ public class User implements Serializable {
 
     /**
      * Getter de lista de roles
+     * 
      * @param roles lista de roles
      */
     public void setRoles(List<Role> roles) {
