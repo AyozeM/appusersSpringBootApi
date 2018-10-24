@@ -51,7 +51,7 @@ public class User implements Serializable {
      * Lista de roles asociados
      */
 
-    @ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
+    @ManyToMany(cascade = { CascadeType.ALL, CascadeType.REMOVE }, fetch = FetchType.LAZY)
     @JoinTable(name = "role_user", joinColumns = { @JoinColumn(name = "id_role") }, inverseJoinColumns = {
             @JoinColumn(name = "id_user") })
     private List<Role> roles = new ArrayList<>();
