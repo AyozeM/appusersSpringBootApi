@@ -155,7 +155,7 @@ public class UsersController extends Controller implements ControllerInterface {
     @ApiOperation(value = "Elimina un usuario", response = User.class)
     @ApiResponses(value = { @ApiResponse(code = 404, message = "El usuario especificado no existe"),
             @ApiResponse(code = 200, message = "Usuario eliminado correctamente"), })
-    public ResponseEntity<?> remove(Integer id) {
+    public ResponseEntity<?> remove(@PathVariable Integer id) {
         ResponseEntity<?> response;
         try {
             exists(id, true, repository);
