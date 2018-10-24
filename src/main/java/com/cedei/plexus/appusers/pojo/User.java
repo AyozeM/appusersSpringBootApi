@@ -51,7 +51,7 @@ public class User implements Serializable {
      * Lista de roles asociados
      */
 
-    @ManyToMany(cascade = { CascadeType.ALL, CascadeType.REMOVE }, fetch = FetchType.LAZY)
+    @ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
     @JoinTable(name = "role_user", joinColumns = { @JoinColumn(name = "id_role") }, inverseJoinColumns = {
             @JoinColumn(name = "id_user") })
     private List<Role> roles = new ArrayList<>();
@@ -107,7 +107,9 @@ public class User implements Serializable {
      * @param name nombre
      */
     public void setName(String name) {
-        this.name = name;
+        if (name != null) {
+            this.name = name;
+        }
     }
 
     /**
@@ -125,7 +127,9 @@ public class User implements Serializable {
      * @param email email
      */
     public void setEmail(String email) {
-        this.email = email;
+        if (email != null) {
+            this.email = email;
+        }
     }
 
     /**

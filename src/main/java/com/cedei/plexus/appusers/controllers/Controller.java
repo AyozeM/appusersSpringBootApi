@@ -1,5 +1,7 @@
 package com.cedei.plexus.appusers.controllers;
 
+import java.util.Optional;
+
 import com.cedei.plexus.appusers.exceptions.java.EmptyBodyException;
 import com.cedei.plexus.appusers.exceptions.java.ResourceExists;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -46,12 +48,14 @@ public abstract class Controller {
      * @param repository repositorio en el cual buscar el recurso
      * @throws ResourceExists
      */
-    protected void exists(Integer id, Boolean mustExists, JpaRepository repository) throws ResourceExists {
-        Boolean result = id != null && repository.findById(id).isPresent();
+    protected Optional exists(Integer id, Boolean mustExists, JpaRepository repository) throws ResourceExists {
+        Optional aux = repository.findById(id);
+        Boolean result = id != null && aux.isPresent();
 
         if ((result && !mustExists) || (!result && mustExists)) {
             throw new ResourceExists(resource, id, mustExists);
         }
+        return aux;
     }
 
 }

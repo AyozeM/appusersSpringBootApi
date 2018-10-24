@@ -1,6 +1,7 @@
 package com.cedei.plexus.appusers.controllers;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.cedei.plexus.appusers.db.UserRepository;
 import com.cedei.plexus.appusers.exceptions.java.EmptyBodyException;
@@ -130,18 +131,21 @@ public class UsersController extends Controller implements ControllerInterface {
             @ApiResponse(code = 404, message = "El usuario especificado no existe"), })
     public ResponseEntity<?> update(RequestEntity<?> request) {
         ResponseEntity<?> response;
-        User toUpdate = null;
+        User sendUser = null;
         try {
             checkEmptyBody(request.getBody());
-            toUpdate = converter.convertValue(request.getBody(), User.class);
-            exists(toUpdate.getId(), true, repository);
-            response = new ResponseEntity<User>(repository.save(toUpdate), HttpStatus.OK);
+            sendUser = converter.convertValue(request.getBody(), User.class);
+            User dbUser  = (User) exists(sendUser.getId(), true, repository).get(); 
+            dbUser.setEmail(sendUser.getEmail());
+            dbUser.setName(sendUser.getName());
+            dbUser.setRoles(sendUser.getRoles());
+            response = new ResponseEntity<User>(repository.save(dbUser), HttpStatus.OK);
         } catch (EmptyBodyException e) {
             e.printStackTrace();
             response = new ResponseEntity<BadRequestException>(new BadRequestException(), HttpStatus.BAD_REQUEST);
         } catch (ResourceExists e) {
             e.printStackTrace();
-            response = new ResponseEntity<ResourceExists>(new ResourceExists(this.resource, toUpdate.getId(), false),
+            response = new ResponseEntity<ResourceExists>(new ResourceExists(this.resource, sendUser.getId(), false),
                     HttpStatus.NOT_FOUND);
         }
         return response;
