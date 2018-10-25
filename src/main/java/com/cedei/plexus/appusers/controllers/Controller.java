@@ -1,12 +1,7 @@
 package com.cedei.plexus.appusers.controllers;
 
-import java.util.Optional;
-
 import com.cedei.plexus.appusers.exceptions.java.EmptyBodyException;
-import com.cedei.plexus.appusers.exceptions.java.ResourceExists;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
  * Controller

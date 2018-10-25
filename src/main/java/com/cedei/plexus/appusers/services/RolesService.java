@@ -6,6 +6,8 @@ import com.cedei.plexus.appusers.db.RoleRepository;
 import com.cedei.plexus.appusers.exceptions.java.ResourceExists;
 import com.cedei.plexus.appusers.models.Role;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +19,8 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class RolesService extends ServiceUtils {
+
+    final Logger logger = LoggerFactory.getLogger(RolesService.class);
 
     @Autowired
     RoleRepository repository;
@@ -36,7 +40,7 @@ public class RolesService extends ServiceUtils {
      */
     public List<Role> getAll() throws Exception {
         List<Role> list = repository.findAll();
-
+        logger.debug("Obteniendo todos los roles");
         if (list == null) {
             throw new Exception("fallo");
         }
@@ -53,6 +57,7 @@ public class RolesService extends ServiceUtils {
      */
     public Role add(Role toAdd) throws ResourceExists, Exception {
         Role toReturn = null;
+        logger.debug("añadiendo un rol");
         try {
             this.exists(toAdd.getId(), false, repository);
             toReturn = repository.save(toAdd);
@@ -76,6 +81,7 @@ public class RolesService extends ServiceUtils {
      */
     public Role getById(Integer id) throws ResourceExists, Exception {
         Role toReturn = null;
+        logger.debug(String.format("Buscando el rol con id %d", id));
         try {
             this.exists(id, true, repository);
             toReturn = repository.findById(id).get();
@@ -99,6 +105,7 @@ public class RolesService extends ServiceUtils {
      */
     public Role update(Role toUpdate) throws ResourceExists, Exception {
         Role toReturn = null;
+        logger.debug(String.format("Actualizando rol con id %d", toUpdate.getId()));
         try {
             Role dbRole = (Role) this.exists(toUpdate.getId(), true, repository).get();
             dbRole.setName(toUpdate.getName());
@@ -125,6 +132,7 @@ public class RolesService extends ServiceUtils {
      */
     public String remove(Integer id) throws ResourceExists, Exception {
         try {
+            logger.debug(String.format("Eliminando el rol con id %d", id));
             this.exists(id, true, repository);
             repository.deleteById(id);
         } catch (ResourceExists e) {

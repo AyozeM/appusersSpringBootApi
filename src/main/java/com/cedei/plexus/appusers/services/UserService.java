@@ -6,6 +6,8 @@ import com.cedei.plexus.appusers.db.UserRepository;
 import com.cedei.plexus.appusers.exceptions.java.ResourceExists;
 import com.cedei.plexus.appusers.models.User;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +23,8 @@ public class UserService extends ServiceUtils {
     @Autowired
     UserRepository repository;
 
+    final Logger logger = LoggerFactory.getLogger(ServiceUtils.class);
+
     /**
      * Construye un nuevo servicio de usuarios
      */
@@ -33,8 +37,13 @@ public class UserService extends ServiceUtils {
      * 
      * @return lista de usuarios
      */
-    public List<User> getAll() {
-        return repository.findAll();
+    public List<User> getAll() throws Exception {
+        List<User> list = repository.findAll();
+        logger.debug("Obteniendo todos los usuarios");
+        if (list == null) {
+            throw new Exception();
+        }
+        return list;
     }
 
     /**
@@ -47,6 +56,7 @@ public class UserService extends ServiceUtils {
      */
     public User add(User toAdd) throws ResourceExists, Exception {
         User toReturn = null;
+        logger.debug("Añadiendo un usuario");
         try {
             this.exists(toAdd.getId(), false, repository);
             toReturn = repository.save(toAdd);
@@ -70,6 +80,7 @@ public class UserService extends ServiceUtils {
      */
     public User getById(Integer id) throws ResourceExists, Exception {
         User toReturn = null;
+        logger.debug(String.format("Buscando usuario con id %d",id));
         try {
             this.exists(id, true, repository);
             toReturn = repository.findById(id).get();
@@ -93,6 +104,7 @@ public class UserService extends ServiceUtils {
      */
     public User update(User toUpdate) throws ResourceExists, Exception {
         User toReturn = null;
+        logger.debug(String.format("Actualizando usuario con id %d", toUpdate.getId()));
         try {
             User dbUser = (User) this.exists(toUpdate.getId(), true, repository).get();
             dbUser.setEmail(toUpdate.getEmail());
@@ -118,6 +130,7 @@ public class UserService extends ServiceUtils {
      * @throws Exception
      */
     public String remove(Integer id) throws ResourceExists, Exception {
+        logger.debug(String.format("Eliminando usaurio con id %d", id));
         try {
             this.exists(id, true, repository);
             repository.deleteById(id);

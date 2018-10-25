@@ -2,7 +2,6 @@ package com.cedei.plexus.appusers.controllers;
 
 import java.util.List;
 
-import com.cedei.plexus.appusers.db.UserRepository;
 import com.cedei.plexus.appusers.exceptions.java.EmptyBodyException;
 import com.cedei.plexus.appusers.exceptions.java.ResourceExists;
 import com.cedei.plexus.appusers.exceptions.rest.BadRequestException;
@@ -75,7 +74,7 @@ public class UsersController extends Controller implements ControllerInterface {
         }
         return response;
     }
-
+    
     /**
      * Implementacion del metodo getAll
      */
@@ -83,15 +82,13 @@ public class UsersController extends Controller implements ControllerInterface {
     @GetMapping("all")
     @ApiOperation(value = "Obtiene todos los usuarios", response = User.class, responseContainer = "List")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Usuarios obtenidos"),
-            @ApiResponse(code = 500, message = "Fallo en la base de datos"), })
+    @ApiResponse(code = 500, message = "Fallo en la base de datos"), })
     public ResponseEntity<?> getAll(RequestEntity<?> request) {
         ResponseEntity<?> response;
-        // List<User> result = repository.findAll();
-        List<User> result = service.getAll();
-        if (result != null) {
-            response = new ResponseEntity<List<User>>(result, HttpStatus.OK);
-        } else {
-            response = new ResponseEntity<String>("Hubo un fallo", HttpStatus.INTERNAL_SERVER_ERROR);
+        try {
+            response = new ResponseEntity<List<User>>(this.service.getAll(),HttpStatus.OK);
+        } catch (Exception e) {
+            response = new ResponseEntity<String>("Fallo interno", HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return response;
     }

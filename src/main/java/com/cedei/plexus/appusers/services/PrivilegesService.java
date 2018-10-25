@@ -6,6 +6,8 @@ import com.cedei.plexus.appusers.db.PrivilegeRepository;
 import com.cedei.plexus.appusers.exceptions.java.ResourceExists;
 import com.cedei.plexus.appusers.models.Privilege;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +23,8 @@ public class PrivilegesService extends ServiceUtils {
     @Autowired
     PrivilegeRepository repository;
 
+    final Logger logger = LoggerFactory.getLogger(PrivilegesService.class);
+
     public PrivilegesService() {
         this.resource = "privilege";
     }
@@ -32,6 +36,7 @@ public class PrivilegesService extends ServiceUtils {
      * @throws Exception
      */
     public List<Privilege> getAll() throws Exception {
+        logger.debug("Obteniendo todos los privilegios");
         List<Privilege> list = this.repository.findAll();
         if (list == null) {
             throw new Exception();
@@ -49,6 +54,7 @@ public class PrivilegesService extends ServiceUtils {
      */
     public Privilege add(Privilege toAdd) throws ResourceExists, Exception {
         Privilege toReturn = null;
+        logger.debug("Añadiendo un privilegio");
         try {
             this.exists(toAdd.getId(), false, repository);
             toReturn = repository.save(toAdd);
@@ -72,6 +78,7 @@ public class PrivilegesService extends ServiceUtils {
      */
     public Privilege getById(Integer id) throws ResourceExists, Exception {
         Privilege toReturn = null;
+        logger.debug(String.format("Buscando el privilegio con id %d",id));
         try {
             this.exists(id, true, repository);
             toReturn = repository.findById(id).get();
@@ -95,6 +102,7 @@ public class PrivilegesService extends ServiceUtils {
      */
     public Privilege update(Privilege toUpdate) throws ResourceExists, Exception {
         Privilege toReturn = null;
+        logger.debug(String.format("Actualizando privilegio con id %d",toUpdate.getId()));
         try {
             Privilege dbPrivilege = (Privilege) this.exists(toUpdate.getId(), true, repository).get();
             dbPrivilege.setName(toUpdate.getName());
@@ -120,6 +128,7 @@ public class PrivilegesService extends ServiceUtils {
      */
     public String remove(Integer id) throws ResourceExists, Exception {
         try {
+            logger.debug(String.format("Eliminando privilegio con id %d", id));
             this.exists(id, true, repository);
             repository.deleteById(id);
         } catch (ResourceExists e) {
