@@ -2,13 +2,13 @@ package com.cedei.plexus.appusers.controllers;
 
 import java.util.List;
 
-import com.cedei.plexus.appusers.db.RoleRepository;
 import com.cedei.plexus.appusers.exceptions.java.EmptyBodyException;
 import com.cedei.plexus.appusers.exceptions.java.ResourceExists;
 import com.cedei.plexus.appusers.exceptions.rest.BadRequestException;
 import com.cedei.plexus.appusers.exceptions.rest.ConfictExeption;
 import com.cedei.plexus.appusers.exceptions.rest.NotFoundExeption;
-import com.cedei.plexus.appusers.pojo.Role;
+import com.cedei.plexus.appusers.models.Role;
+import com.cedei.plexus.appusers.services.RolesService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -40,14 +40,13 @@ import io.swagger.annotations.ApiResponses;
 @Api(value = "/api/roles", description = "Operaciones robre roles")
 public class RolesController extends Controller implements ControllerInterface {
 
-    /**
-     * Repositorio de roles
-     */
     @Autowired
-    RoleRepository repository;
+    RolesService service;
 
     /**
-     * Constructor
+     * Constructor:
+     * 
+     * Crea un nuevo controlador de roles
      */
     public RolesController() {
         this.resource = "rol";
@@ -67,14 +66,13 @@ public class RolesController extends Controller implements ControllerInterface {
         try {
             checkEmptyBody(request.getBody());
             Role toAdd = converter.convertValue(request.getBody(), Role.class);
-            exists(toAdd.getId(), false, repository);
-            response = new ResponseEntity<Role>(repository.save(toAdd), HttpStatus.CREATED);
+            response = new ResponseEntity<Role>(this.service.add(toAdd), HttpStatus.CREATED);
         } catch (EmptyBodyException e) {
-            e.printStackTrace();
             response = new ResponseEntity<BadRequestException>(new BadRequestException(), HttpStatus.BAD_REQUEST);
         } catch (ResourceExists e) {
-            e.printStackTrace();
             response = new ResponseEntity<ConfictExeption>(new ConfictExeption(e.getMessage()), HttpStatus.CONFLICT);
+        } catch (Exception e) {
+            response = new ResponseEntity<String>("fallo inesperado", HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return response;
     }
@@ -89,10 +87,10 @@ public class RolesController extends Controller implements ControllerInterface {
             @ApiResponse(code = 500, message = "Fallo con la base de datos") })
     public ResponseEntity<?> getAll(RequestEntity<?> request) {
         ResponseEntity<?> response;
-        List<Role> result = repository.findAll();
-        if (result != null) {
-            response = new ResponseEntity<List<Role>>(result, HttpStatus.OK);
-        } else {
+        try {
+            response = new ResponseEntity<List<Role>>(this.service.getAll(), HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
             response = new ResponseEntity<String>("Hubo un fallo", HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return response;
@@ -109,12 +107,12 @@ public class RolesController extends Controller implements ControllerInterface {
     public ResponseEntity<?> findById(@PathVariable Integer id) {
         ResponseEntity<?> response;
         try {
-            exists(id, true, repository);
-            response = new ResponseEntity<Role>(repository.findById(id).get(), HttpStatus.OK);
+            response = new ResponseEntity<Role>(this.service.getById(id), HttpStatus.OK);
         } catch (ResourceExists e) {
-            e.printStackTrace();
             response = new ResponseEntity<NotFoundExeption>(new NotFoundExeption(this.resource, id),
                     HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            response = new ResponseEntity<String>("Fallo inesperado", HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return response;
     }
@@ -134,15 +132,14 @@ public class RolesController extends Controller implements ControllerInterface {
         try {
             checkEmptyBody(request.getBody());
             toUpdate = converter.convertValue(request.getBody(), Role.class);
-            exists(toUpdate.getId(), true, repository);
-            response = new ResponseEntity<Role>(repository.save(toUpdate), HttpStatus.OK);
+            response = new ResponseEntity<Role>(this.service.update(toUpdate), HttpStatus.OK);
         } catch (EmptyBodyException e) {
-            e.printStackTrace();
             response = new ResponseEntity<BadRequestException>(new BadRequestException(), HttpStatus.BAD_REQUEST);
         } catch (ResourceExists e) {
-            e.printStackTrace();
             response = new ResponseEntity<ResourceExists>(new ResourceExists(this.resource, toUpdate.getId(), false),
                     HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            response = new ResponseEntity<String>("fallo inesperado", HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return response;
     }
@@ -158,14 +155,12 @@ public class RolesController extends Controller implements ControllerInterface {
     public ResponseEntity<?> remove(@PathVariable Integer id) {
         ResponseEntity<?> response;
         try {
-            exists(id, true, repository);
-            repository.deleteById(id);
-            response = new ResponseEntity<String>(String.format("User %d has been remove  sucessfully", id),
-                    HttpStatus.OK);
+            response = new ResponseEntity<String>(this.service.remove(id), HttpStatus.OK);
         } catch (ResourceExists e) {
-            e.printStackTrace();
             response = new ResponseEntity<NotFoundExeption>(new NotFoundExeption(this.resource, id),
                     HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            response = new ResponseEntity<String>("fallo inesperado", HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return response;
     }

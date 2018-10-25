@@ -1,7 +1,6 @@
 package com.cedei.plexus.appusers.controllers;
 
 import java.util.List;
-import java.util.Optional;
 
 import com.cedei.plexus.appusers.db.UserRepository;
 import com.cedei.plexus.appusers.exceptions.java.EmptyBodyException;
@@ -9,7 +8,8 @@ import com.cedei.plexus.appusers.exceptions.java.ResourceExists;
 import com.cedei.plexus.appusers.exceptions.rest.BadRequestException;
 import com.cedei.plexus.appusers.exceptions.rest.ConfictExeption;
 import com.cedei.plexus.appusers.exceptions.rest.NotFoundExeption;
-import com.cedei.plexus.appusers.pojo.User;
+import com.cedei.plexus.appusers.models.User;
+import com.cedei.plexus.appusers.services.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -41,11 +41,8 @@ import io.swagger.annotations.ApiResponses;
 @Api(value = "/api/users", description = "Operaciones sobre usuarios", consumes = "application/json")
 public class UsersController extends Controller implements ControllerInterface {
 
-    /**
-     * Repositorio de usuarios
-     */
     @Autowired
-    UserRepository repository;
+    UserService service;
 
     /**
      * Constructor
@@ -68,14 +65,13 @@ public class UsersController extends Controller implements ControllerInterface {
         try {
             checkEmptyBody(request.getBody());
             User toAdd = converter.convertValue(request.getBody(), User.class);
-            exists(toAdd.getId(), false, repository);
-            response = new ResponseEntity<User>(repository.save(toAdd), HttpStatus.OK);
+            response = new ResponseEntity<User>(this.service.add(toAdd), HttpStatus.OK);
         } catch (EmptyBodyException e) {
-            e.printStackTrace();
             response = new ResponseEntity<BadRequestException>(new BadRequestException(), HttpStatus.BAD_REQUEST);
         } catch (ResourceExists e) {
-            e.printStackTrace();
             response = new ResponseEntity<ConfictExeption>(new ConfictExeption(e.getMessage()), HttpStatus.CONFLICT);
+        } catch (Exception e) {
+            response = new ResponseEntity<String>("Fallo interno", HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return response;
     }
@@ -90,7 +86,8 @@ public class UsersController extends Controller implements ControllerInterface {
             @ApiResponse(code = 500, message = "Fallo en la base de datos"), })
     public ResponseEntity<?> getAll(RequestEntity<?> request) {
         ResponseEntity<?> response;
-        List<User> result = repository.findAll();
+        // List<User> result = repository.findAll();
+        List<User> result = service.getAll();
         if (result != null) {
             response = new ResponseEntity<List<User>>(result, HttpStatus.OK);
         } else {
@@ -110,12 +107,12 @@ public class UsersController extends Controller implements ControllerInterface {
     public ResponseEntity<?> findById(@PathVariable Integer id) {
         ResponseEntity<?> response;
         try {
-            exists(id, true, repository);
-            response = new ResponseEntity<User>(repository.findById(id).get(), HttpStatus.OK);
+            response = new ResponseEntity<User>(service.getById(id), HttpStatus.OK);
         } catch (ResourceExists e) {
-            e.printStackTrace();
             response = new ResponseEntity<NotFoundExeption>(new NotFoundExeption(this.resource, id),
                     HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            response = new ResponseEntity<String>("fallo interno", HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return response;
     }
@@ -135,18 +132,14 @@ public class UsersController extends Controller implements ControllerInterface {
         try {
             checkEmptyBody(request.getBody());
             sendUser = converter.convertValue(request.getBody(), User.class);
-            User dbUser  = (User) exists(sendUser.getId(), true, repository).get(); 
-            dbUser.setEmail(sendUser.getEmail());
-            dbUser.setName(sendUser.getName());
-            dbUser.setRoles(sendUser.getRoles());
-            response = new ResponseEntity<User>(repository.save(dbUser), HttpStatus.OK);
+            response = new ResponseEntity<User>(this.service.update(sendUser), HttpStatus.OK);
         } catch (EmptyBodyException e) {
-            e.printStackTrace();
             response = new ResponseEntity<BadRequestException>(new BadRequestException(), HttpStatus.BAD_REQUEST);
         } catch (ResourceExists e) {
-            e.printStackTrace();
-            response = new ResponseEntity<ResourceExists>(new ResourceExists(this.resource, sendUser.getId(), false),
+            response = new ResponseEntity<NotFoundExeption>(new NotFoundExeption(this.resource, sendUser.getId()),
                     HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            response = new ResponseEntity<String>("Fallo inesperado", HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return response;
     }
@@ -162,14 +155,14 @@ public class UsersController extends Controller implements ControllerInterface {
     public ResponseEntity<?> remove(@PathVariable Integer id) {
         ResponseEntity<?> response;
         try {
-            exists(id, true, repository);
-            repository.deleteById(id);
-            response = new ResponseEntity<String>(String.format("User %d has been remove  sucessfully", id),
-                    HttpStatus.OK);
+            response = new ResponseEntity<String>(service.remove(id), HttpStatus.OK);
         } catch (ResourceExists e) {
             e.printStackTrace();
             response = new ResponseEntity<NotFoundExeption>(new NotFoundExeption(this.resource, id),
                     HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            e.printStackTrace();
+            response = new ResponseEntity<String>("fallo inesparado", HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return response;
     }

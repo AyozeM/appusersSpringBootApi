@@ -1,4 +1,4 @@
-package com.cedei.plexus.appusers.pojo;
+package com.cedei.plexus.appusers.models;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -147,7 +147,9 @@ public class User implements Serializable {
      * @param roles lista de roles
      */
     public void setRoles(List<Role> roles) {
-        this.roles = roles;
+        if (roles == null || roles.size() > 0) {
+            this.roles = roles;
+        }
     }
 
 }

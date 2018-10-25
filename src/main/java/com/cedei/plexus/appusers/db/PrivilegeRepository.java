@@ -1,6 +1,6 @@
 package com.cedei.plexus.appusers.db;
 
-import com.cedei.plexus.appusers.pojo.Privilege;
+import com.cedei.plexus.appusers.models.Privilege;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
