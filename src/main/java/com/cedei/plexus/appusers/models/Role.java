@@ -56,7 +56,7 @@ public class Role implements Serializable {
     /**
      * Lista de privilegios asociados al rol
      */
-    @ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "role_privilege", joinColumns = @JoinColumn(name = "id_role"), inverseJoinColumns = @JoinColumn(name = "id_privilege"))
     private List<Privilege> privileges = new ArrayList<>();
 
