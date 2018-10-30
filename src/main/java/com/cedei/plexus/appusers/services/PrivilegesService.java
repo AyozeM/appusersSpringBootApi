@@ -5,6 +5,7 @@ import java.util.List;
 import com.cedei.plexus.appusers.db.PrivilegeRepository;
 import com.cedei.plexus.appusers.exceptions.java.ResourceExists;
 import com.cedei.plexus.appusers.models.Privilege;
+import com.cedei.plexus.appusers.models.Role;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -129,7 +130,12 @@ public class PrivilegesService extends ServiceUtils {
     public String remove(Integer id) throws ResourceExists, Exception {
         try {
             logger.debug(String.format("Eliminando privilegio con id %d", id));
-            this.exists(id, true, repository);
+            Privilege toRemove =  (Privilege) this.exists(id, true, repository).get();
+            if(toRemove.getRoles().size() > 0){
+                for(Role aux: toRemove.getRoles()){
+                    aux.getPrivileges().removeIf(e -> e.equals(toRemove));
+                }
+            }
             repository.deleteById(id);
         } catch (ResourceExists e) {
             e.printStackTrace();

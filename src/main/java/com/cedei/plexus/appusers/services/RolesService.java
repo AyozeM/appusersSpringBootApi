@@ -5,6 +5,7 @@ import java.util.List;
 import com.cedei.plexus.appusers.db.RoleRepository;
 import com.cedei.plexus.appusers.exceptions.java.ResourceExists;
 import com.cedei.plexus.appusers.models.Role;
+import com.cedei.plexus.appusers.models.User;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -133,7 +134,12 @@ public class RolesService extends ServiceUtils {
     public String remove(Integer id) throws ResourceExists, Exception {
         try {
             logger.debug(String.format("Eliminando el rol con id %d", id));
-            this.exists(id, true, repository);
+            Role toRemove = (Role) this.exists(id, true, repository).get();
+            if(toRemove.getUsers().size() > 0){
+                for(User aux: toRemove.getUsers()){
+                    aux.getRoles().removeIf(e -> e.equals(toRemove));
+                }
+            }
             repository.deleteById(id);
         } catch (ResourceExists e) {
             throw e;
