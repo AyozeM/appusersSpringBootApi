@@ -40,6 +40,9 @@ public class User implements Serializable {
     @Column(name = "name", length = 20)
     private String name;
 
+    @Column(name = "password", length = 200)
+    private String password;
+
     /**
      * Email del usuario
      */
@@ -50,7 +53,7 @@ public class User implements Serializable {
      * Lista de roles asociados
      */
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "role_user", joinColumns = { @JoinColumn(name = "id_user") }, inverseJoinColumns = {
             @JoinColumn(name = "id_role") })
     private List<Role> roles = new ArrayList<>();
@@ -68,8 +71,9 @@ public class User implements Serializable {
      * @param name  nombre
      * @param email email
      */
-    public User(String name, String email) {
+    public User(String name, String password, String email) {
         this.name = name;
+        this.password = password;
         this.email = email;
     }
 
@@ -108,6 +112,26 @@ public class User implements Serializable {
     public void setName(String name) {
         if (name != null) {
             this.name = name;
+        }
+    }
+
+    /**
+     * Getter de contraseña
+     * 
+     * @return pasword
+     */
+    public String getPassword() {
+        return this.password;
+    }
+
+    /**
+     * Setter de contraseña
+     * 
+     * @param password new password
+     */
+    public void setPassword(String password) {
+        if (password != null) {
+            this.password = password;
         }
     }
 
