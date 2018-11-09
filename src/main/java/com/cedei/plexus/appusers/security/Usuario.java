@@ -1,7 +1,6 @@
 package com.cedei.plexus.appusers.security;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.stream.Collectors;
 
 import com.cedei.plexus.appusers.models.User;
@@ -13,38 +12,22 @@ import org.springframework.security.core.userdetails.UserDetails;
 /**
  * Usuario
  */
-public class Usuario implements UserDetails {
+public class Usuario extends User implements UserDetails {
 
     private static final long serialVersionUID = 1L;
-    private String username;
-    private String password;
-    private Collection<? extends GrantedAuthority> authorities;
 
-    public Usuario(String username, String password, Collection<? extends GrantedAuthority> authorities) {
-        this.username = username;
-        this.password = password;
-        this.authorities = authorities;
-    }
-
-    public static Usuario create(User user) {
-        List<GrantedAuthority> authorities = user.getRoles().stream()
-                .map(role ->(GrantedAuthority) new SimpleGrantedAuthority(String.format("ROLE_%s", role.getName()))).collect(Collectors.toList());
-        return new Usuario(user.getName(), user.getPassword(), authorities);
+    public Usuario(User user) {
+        super();
+        super.id_user = user.getId();
+        super.name = user.getName();
+        super.password = user.getPassword();
+        super.roles = user.getRoles();
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.authorities;
-    }
-
-    @Override
-    public String getPassword() {
-        return this.password;
-    }
-
-    @Override
-    public String getUsername() {
-        return this.username;
+        return super.roles.stream().map(role -> new SimpleGrantedAuthority(role.getName()))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -65,6 +48,11 @@ public class Usuario implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    @Override
+    public String getUsername() {
+        return super.name;
     }
 
 }

@@ -32,22 +32,22 @@ public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_user", unique = true, nullable = false)
-    private Integer id_user;
+    protected Integer id_user;
 
     /**
      * Nombre de usuario
      */
     @Column(name = "name", length = 20)
-    private String name;
+    protected String name;
 
     @Column(name = "password", length = 200)
-    private String password;
+    protected String password;
 
     /**
      * Email del usuario
      */
     @Column(name = "email", length = 45)
-    private String email;
+    protected String email;
 
     /**
      * Lista de roles asociados
@@ -56,7 +56,7 @@ public class User implements Serializable {
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "role_user", joinColumns = { @JoinColumn(name = "id_user") }, inverseJoinColumns = {
             @JoinColumn(name = "id_role") })
-    private List<Role> roles = new ArrayList<>();
+    protected List<Role> roles = new ArrayList<>();
 
     /**
      * Cosntructor
