@@ -3,16 +3,30 @@ package com.cedei.plexus.appusers.security;
 /**
  * Constants
  */
+
 public class Constants {
 
-    // Spring Security
-    public static final String LOGIN_URL = "/login";
-    public static final String HEADER_AUTHORIZACION_KEY = "Authorization";
-    public static final String TOKEN_BEARER_PREFIX = "Bearer";
+    final String LOGIN_URL = "/api/login";
 
-    // JWT
-    public static final String ISSUER_INFO = "http://localhost:8090";
-    public static final String SUPER_SECRET_KEY = "1234";
-    public static final long TOKEN_EXPIRATION_TIME = 864_000_000;
+    final String HEADER_AUTORIZACION_KEY = "Authorization";
 
+    final String TOKEN_BEARER_PREFIX = "Bearer";
+
+    final String SUPER_SECRET_KEY = "Sus0_3n_Sus0l@d1@";
+
+    public String getLOGIN_URL() {
+        return this.LOGIN_URL;
+    }
+
+    public String getHEADER_AUTORIZACION_KEY() {
+        return this.HEADER_AUTORIZACION_KEY;
+    }
+
+    public String getTOKEN_BEARER_PREFIX() {
+        return this.TOKEN_BEARER_PREFIX;
+    }
+
+    public String getSUPER_SECRET_KEY() {
+        return this.SUPER_SECRET_KEY;
+    }
 }

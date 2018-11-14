@@ -37,12 +37,6 @@ public class AuthenticationFilter extends AbstractAuthenticationProcessingFilter
         User user = new ObjectMapper().readValue(body, User.class);
         return getAuthenticationManager().authenticate(
                 new UsernamePasswordAuthenticationToken(user.getName(), user.getPassword(), Collections.emptyList()));
-        /*
-         * return getAuthenticationManager().authenticate( new
-         * UsernamePasswordAuthenticationToken(user.getName(), user.getPassword(),
-         * Collections.emptyList()));
-         */
-        // return JwtUtil.getAuthentication(request, getRoles(user.getRoles()));
     }
 
     @Override

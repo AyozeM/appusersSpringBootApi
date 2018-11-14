@@ -1,13 +1,13 @@
 package com.cedei.plexus.appusers.config;
 
-import static com.cedei.plexus.appusers.security.Constants.LOGIN_URL;
-
+import com.cedei.plexus.appusers.db.RoleRepository;
 import com.cedei.plexus.appusers.db.UserRepository;
 import com.cedei.plexus.appusers.security.AuthenticationFilter;
 import com.cedei.plexus.appusers.security.AuthorizationFilter;
 import com.cedei.plexus.appusers.services.UserDetailsServiceImpl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -24,6 +24,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 public class WebSecurity extends WebSecurityConfigurerAdapter {
+    
+    String update,add;
+
+    @Value("${suso.login.path}")
+    String loginUrl;
 
     private UserDetailsServiceImpl userDetailsService;
 
@@ -34,6 +39,9 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
     @Autowired
     UserRepository repo;
 
+    @Autowired
+    RoleRepository roleRepo;
+
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
@@ -41,12 +49,17 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable().authorizeRequests().antMatchers(HttpMethod.POST, LOGIN_URL).permitAll()
-                .antMatchers("/api/users/all").hasAnyAuthority("usuario")
-                .anyRequest().authenticated().and()
-                .addFilterBefore(new AuthenticationFilter("/login", authenticationManager()),
-                        UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new AuthorizationFilter(repo), UsernamePasswordAuthenticationFilter.class);
+        String regexp = "\\[|\\]";
+        this.update= roleRepo.filterByPrivilege(3).toString().replaceAll(regexp, "");
+        this.add = roleRepo.filterByPrivilege(2).toString().replaceAll(regexp, "");
+        http.cors().and().csrf().disable().authorizeRequests().antMatchers(HttpMethod.POST, this.loginUrl).permitAll()
+            .antMatchers(HttpMethod.POST,"/api/**").hasAnyAuthority(String.format("%s,%s",this.add,this.update))
+            .antMatchers(HttpMethod.DELETE,"/api/**").hasAnyAuthority(this.update)
+            .antMatchers(HttpMethod.PUT,"/api/**").hasAnyAuthority(this.update)
+            .anyRequest().authenticated().and()
+            .addFilterBefore(new AuthenticationFilter(this.loginUrl, authenticationManager()),
+                    UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(new AuthorizationFilter(this.repo), UsernamePasswordAuthenticationFilter.class);
     }
 
     @Override
