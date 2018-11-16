@@ -43,6 +43,12 @@ public class Privilege implements Serializable {
     private String name;
 
     /**
+     * Nivel de autorizacion
+     */
+    @Column(name ="authorization")
+    private Integer authorization;
+
+    /**
      * Lista de roles asociados
      */
     @ManyToMany(mappedBy = "privileges")
@@ -104,6 +110,25 @@ public class Privilege implements Serializable {
             this.name = name;
         }
     }
+
+
+        /**
+     * Getter para el nivel de autorizacion
+     * @return nivel de autorizacion
+     */
+    public Integer getAuthorization() {
+        return this.authorization;
+    }
+
+    /**
+     * Setter para el nivel de autorizacion
+     * @param authorization nivel de autorizacion
+     */
+    public void setAuthorization(Integer authorization) {
+        this.authorization = authorization;
+    }
+
+
 
     /**
      * Getter para roles

@@ -20,9 +20,13 @@ public class JwtUtil {
 
     static void addAuthentication(HttpServletResponse response, String username) throws IOException {
         String token = String.format("%s %s", aux.getTOKEN_BEARER_PREFIX(), Jwts.builder().setSubject(username).signWith(SignatureAlgorithm.HS512, aux.getSUPER_SECRET_KEY()).compact());
-        response.addHeader("Content-Type", "application/json;charset=UTF-8");
+        response.addHeader("Content-Type", "text/html; charset=utf-8");
         response.addHeader(aux.getHEADER_AUTORIZACION_KEY(),token);
-        response.getWriter().write(token);
+
+        StringBuilder body = new StringBuilder("{");
+        body.append(String.format("\"token\": \"%s\"", token));
+        body.append("}");
+        response.getWriter().write(body.toString());
         response.flushBuffer();
     }
 

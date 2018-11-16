@@ -4,11 +4,14 @@ import java.util.List;
 
 import com.cedei.plexus.appusers.db.UserRepository;
 import com.cedei.plexus.appusers.exceptions.java.ResourceExists;
+import com.cedei.plexus.appusers.models.Privilege;
+import com.cedei.plexus.appusers.models.Role;
 import com.cedei.plexus.appusers.models.User;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 /**
@@ -20,6 +23,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserService extends ServiceUtils {
 
+    private BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+    
     @Autowired
     UserRepository repository;
 
@@ -59,6 +64,7 @@ public class UserService extends ServiceUtils {
         logger.debug("Añadiendo un usuario");
         try {
             this.exists(toAdd.getId(), false, repository);
+            toAdd.setPassword(this.bCryptPasswordEncoder.encode(toAdd.getPassword()));
             toReturn = repository.save(toAdd);
         } catch (ResourceExists e) {
             e.printStackTrace();
@@ -110,6 +116,7 @@ public class UserService extends ServiceUtils {
             dbUser.setEmail(toUpdate.getEmail());
             dbUser.setName(toUpdate.getName());
             dbUser.setRoles(toUpdate.getRoles());
+            dbUser.setPassword(this.bCryptPasswordEncoder.encode(toUpdate.getPassword()));
             toReturn = repository.save(dbUser);
         } catch (ResourceExists e) {
             e.printStackTrace();
@@ -131,15 +138,23 @@ public class UserService extends ServiceUtils {
      */
     public String remove(Integer id) throws ResourceExists, Exception {
         logger.debug(String.format("Eliminando usaurio con id %d", id));
-        try {
-            this.exists(id, true, repository);
-            repository.deleteById(id);
-        } catch (ResourceExists e) {
-            throw e;
-        } catch (Exception e) {
-            throw e;
-        }
+        this.exists(id, true, repository);
+        repository.deleteById(id);
         return String.format("%s %d has been remove sucessfully", this.resource, id);
+    }
+
+    public Integer getAuthority(String name){
+        User aux = repository.findByName(name);
+        Integer sumPrivi = 0;
+        for (Role role : aux.getRoles()) {
+            for (Privilege privilege : role.getPrivileges()) {
+                Integer actualAuth = privilege.getAuthorization();
+                if (actualAuth > sumPrivi) {
+                    sumPrivi = actualAuth;
+                }
+            }
+        }
+        return sumPrivi;
     }
 
 }

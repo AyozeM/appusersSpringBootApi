@@ -17,6 +17,6 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface RoleRepository extends JpaRepository<Role, Integer> {
-    @Query("select r.name from Role r where (select p from Privilege p where p.id_privilege = ?1) member of r.privileges")
+    @Query("select r.name from Role r where (select p from Privilege p where p.authorization  = ?1) member of r.privileges")
     List<Role> filterByPrivilege(Integer idPrivilege);
 }

@@ -37,7 +37,7 @@ public class User implements Serializable {
     /**
      * Nombre de usuario
      */
-    @Column(name = "name", length = 20)
+    @Column(name = "name", length = 20, unique = true)
     protected String name;
 
     @Column(name = "password", length = 200)

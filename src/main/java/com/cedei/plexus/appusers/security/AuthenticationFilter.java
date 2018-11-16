@@ -32,7 +32,6 @@ public class AuthenticationFilter extends AbstractAuthenticationProcessingFilter
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException, IOException, ServletException {
-
         InputStream body = request.getInputStream();
         User user = new ObjectMapper().readValue(body, User.class);
         return getAuthenticationManager().authenticate(
