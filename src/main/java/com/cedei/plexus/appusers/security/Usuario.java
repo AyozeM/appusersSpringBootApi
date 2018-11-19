@@ -3,8 +3,6 @@ package com.cedei.plexus.appusers.security;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-import com.cedei.plexus.appusers.models.Privilege;
-import com.cedei.plexus.appusers.models.Role;
 import com.cedei.plexus.appusers.models.User;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -22,6 +20,7 @@ public class Usuario extends User implements UserDetails {
         super();
         super.id_user = user.getId();
         super.name = user.getName();
+        super.email = user.getEmail();
         super.password = user.getPassword();
         super.roles = user.getRoles();
     }

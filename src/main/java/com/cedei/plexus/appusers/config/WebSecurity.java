@@ -52,7 +52,8 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
         String regexp = "\\[|\\]";
         this.update= roleRepo.filterByPrivilege(3).toString().replaceAll(regexp, "");
         this.add = roleRepo.filterByPrivilege(2).toString().replaceAll(regexp, "");
-        http.cors().and().csrf().disable().authorizeRequests().antMatchers(HttpMethod.POST, this.loginUrl).permitAll()
+        http.cors().and().csrf().disable().authorizeRequests()
+            .antMatchers("/api/users/register").permitAll()
             .antMatchers(HttpMethod.POST,"/api/**").hasAnyAuthority(String.format("%s,%s",this.add,this.update))
             .antMatchers(HttpMethod.DELETE,"/api/**").hasAnyAuthority(this.update)
             .antMatchers(HttpMethod.PUT,"/api/**").hasAnyAuthority(this.update)

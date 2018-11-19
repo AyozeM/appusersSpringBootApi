@@ -1,5 +1,7 @@
 package com.cedei.plexus.appusers.controllers;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.cedei.plexus.appusers.exceptions.java.EmptyBodyException;
@@ -7,14 +9,17 @@ import com.cedei.plexus.appusers.exceptions.java.ResourceExists;
 import com.cedei.plexus.appusers.exceptions.rest.BadRequestException;
 import com.cedei.plexus.appusers.exceptions.rest.ConfictExeption;
 import com.cedei.plexus.appusers.exceptions.rest.NotFoundExeption;
+import com.cedei.plexus.appusers.models.Privilege;
+import com.cedei.plexus.appusers.models.Role;
 import com.cedei.plexus.appusers.models.User;
+import com.cedei.plexus.appusers.services.PrivilegesService;
+import com.cedei.plexus.appusers.services.RolesService;
 import com.cedei.plexus.appusers.services.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -43,6 +48,9 @@ public class UsersController extends Controller implements ControllerInterface {
 
     @Autowired
     UserService service;
+
+    @Autowired
+    RolesService roleService;
 
     /**
      * Constructor
@@ -75,7 +83,7 @@ public class UsersController extends Controller implements ControllerInterface {
         }
         return response;
     }
-    
+
     /**
      * Implementacion del metodo getAll
      */
@@ -83,11 +91,11 @@ public class UsersController extends Controller implements ControllerInterface {
     @GetMapping("all")
     @ApiOperation(value = "Obtiene todos los usuarios", response = User.class, responseContainer = "List")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Usuarios obtenidos"),
-    @ApiResponse(code = 500, message = "Fallo en la base de datos"), })
+            @ApiResponse(code = 500, message = "Fallo en la base de datos"), })
     public ResponseEntity<?> getAll(RequestEntity<?> request) {
         ResponseEntity<?> response;
         try {
-            response = new ResponseEntity<List<User>>(this.service.getAll(),HttpStatus.OK);
+            response = new ResponseEntity<List<User>>(this.service.getAll(), HttpStatus.OK);
         } catch (Exception e) {
             response = new ResponseEntity<String>("Fallo interno", HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -165,16 +173,42 @@ public class UsersController extends Controller implements ControllerInterface {
         return response;
     }
 
-
     @GetMapping("authority/{name}")
-    @ApiOperation(value="Obtiene la autoridad de un usuario", response = Integer.class)
-    public ResponseEntity<?> getAuthority(@PathVariable String name){
-        ResponseEntity <?> response = null;
+    @ApiOperation(value = "Obtiene la autoridad de un usuario", response = Integer.class)
+    public ResponseEntity<?> getAuthority(@PathVariable String name) {
+        ResponseEntity<?> response = null;
         try {
-            response = new ResponseEntity<Integer>(service.getAuthority(name),HttpStatus.OK);
+            response = new ResponseEntity<Integer>(service.getAuthority(name), HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
-            response = new ResponseEntity<String>("Fallo inesperado",HttpStatus.INTERNAL_SERVER_ERROR);
+            response = new ResponseEntity<String>("Fallo inesperado", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return response;
+    }
+
+    @PostMapping("register")
+    @ApiOperation(value = "Añade un nuevo usuario básico de la web", response = User.class)
+    public ResponseEntity<?> createAccount(RequestEntity<?> request) {
+        ResponseEntity response;
+        User newUser;
+        try {
+            checkEmptyBody(request.getBody());
+            newUser = converter.convertValue(request.getBody(), User.class);
+
+            
+            List<Role> roleList = new ArrayList<>(Arrays.asList(roleService.getById(4)));
+
+            newUser.setRoles(roleList);
+            newUser.setPassword("random");
+            newUser.setId(0);
+            
+            response = new ResponseEntity<User>(this.service.add(newUser), HttpStatus.OK);
+        } catch (EmptyBodyException e) {
+            response = new ResponseEntity<BadRequestException>(new BadRequestException(), HttpStatus.BAD_REQUEST);
+        } catch (ResourceExists e) {
+            response = new ResponseEntity<ConfictExeption>(new ConfictExeption(e.getMessage()), HttpStatus.CONFLICT);
+        } catch (Exception e) {
+            response = new ResponseEntity<String>("Fallo inesperado", HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return response;
     }

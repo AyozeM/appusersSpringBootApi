@@ -4,9 +4,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -36,13 +36,13 @@ public class Role implements Serializable {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_role", nullable = false, unique = true)
+    @Column(name = "id_role", nullable = false)
     private Integer id_role;
 
     /**
      * Nombre del rol
      */
-    @Column(name = "name", length = 20)
+    @Column(name = "name", length = 20, unique = true)
     private String name;
 
     /**
@@ -55,19 +55,19 @@ public class Role implements Serializable {
     /**
      * Lista de privilegios asociados al rol
      */
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.PERSIST)
     @JoinTable(name = "role_privilege", joinColumns = @JoinColumn(name = "id_role"), inverseJoinColumns = @JoinColumn(name = "id_privilege"))
     private List<Privilege> privileges = new ArrayList<>();
 
     /**
-     * Constructor
+     * Constructor por defecto
      */
     public Role() {
         // empty
     }
 
     /**
-     * Constructor
+     * Constructor de un rol existente
      * 
      * @param id   identificador de rol
      * @param name nombre del rol
@@ -75,6 +75,17 @@ public class Role implements Serializable {
     public Role(Integer id, String name) {
         this.id_role = id;
         this.name = name;
+    }
+
+    /**
+     * Constructor para añadir
+     * 
+     * @param name       nombre del rol
+     * @param privileges privilegios asignados
+     */
+    public Role(String name, List<Privilege> privileges) {
+        this.name = name;
+        this.privileges = privileges;
     }
 
     /**

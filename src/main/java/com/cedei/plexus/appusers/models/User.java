@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -53,7 +54,7 @@ public class User implements Serializable {
      * Lista de roles asociados
      */
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JoinTable(name = "role_user", joinColumns = { @JoinColumn(name = "id_user") }, inverseJoinColumns = {
             @JoinColumn(name = "id_role") })
     protected List<Role> roles = new ArrayList<>();

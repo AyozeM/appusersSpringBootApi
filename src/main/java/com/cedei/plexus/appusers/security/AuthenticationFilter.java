@@ -35,13 +35,14 @@ public class AuthenticationFilter extends AbstractAuthenticationProcessingFilter
         InputStream body = request.getInputStream();
         User user = new ObjectMapper().readValue(body, User.class);
         return getAuthenticationManager().authenticate(
-                new UsernamePasswordAuthenticationToken(user.getName(), user.getPassword(), Collections.emptyList()));
+                new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword(), Collections.emptyList()));
     }
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
             Authentication auth) throws IOException, ServletException {
-        JwtUtil.addAuthentication(response, auth.getName());
+        Usuario aux = (Usuario) auth.getPrincipal();
+        JwtUtil.addAuthentication(response, aux.getEmail(), aux.getName());
     }
 
 }

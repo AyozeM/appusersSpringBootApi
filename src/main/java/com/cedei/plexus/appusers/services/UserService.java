@@ -144,7 +144,8 @@ public class UserService extends ServiceUtils {
     }
 
     public Integer getAuthority(String name){
-        User aux = repository.findByName(name);
+        User aux = repository.findByEmail(name);
+        //User aux = repository.findByName(name);
         Integer sumPrivi = 0;
         for (Role role : aux.getRoles()) {
             for (Privilege privilege : role.getPrivileges()) {

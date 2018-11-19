@@ -45,7 +45,7 @@ public class Privilege implements Serializable {
     /**
      * Nivel de autorizacion
      */
-    @Column(name ="authorization")
+    @Column(name = "authorization")
     private Integer authorization;
 
     /**
@@ -56,21 +56,34 @@ public class Privilege implements Serializable {
     private List<Role> roles = new ArrayList<>();
 
     /**
-     * Constructor
+     * Constructor por defecto
      */
     public Privilege() {
         // empty
     }
 
     /**
-     * Constructor
+     * Constructor de un privilegio existente
      * 
-     * @param id   identificador de privilegio
-     * @param name nombre del privilegio
+     * @param id            identificador de privilegio
+     * @param name          nombre del privilegio
+     * @param authorization autorizacion
      */
-    public Privilege(Integer id, String name) {
+    public Privilege(Integer id, String name, Integer authorization) {
         this.id_privilege = id;
         this.name = name;
+        this.authorization = authorization;
+    }
+
+    /**
+     * Constructor para añadir
+     * 
+     * @param name          nombre del privilegio
+     * @param authorization autorizacion
+     */
+    public Privilege(String name, Integer authorization) {
+        this.name = name;
+        this.authorization = authorization;
     }
 
     /**
@@ -111,9 +124,9 @@ public class Privilege implements Serializable {
         }
     }
 
-
-        /**
+    /**
      * Getter para el nivel de autorizacion
+     * 
      * @return nivel de autorizacion
      */
     public Integer getAuthorization() {
@@ -122,13 +135,12 @@ public class Privilege implements Serializable {
 
     /**
      * Setter para el nivel de autorizacion
+     * 
      * @param authorization nivel de autorizacion
      */
     public void setAuthorization(Integer authorization) {
         this.authorization = authorization;
     }
-
-
 
     /**
      * Getter para roles

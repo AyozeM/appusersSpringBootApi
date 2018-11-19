@@ -32,10 +32,15 @@ public class AuthorizationFilter extends GenericFilterBean {
             throws IOException, ServletException {
 
         String user = JwtUtil.getUser((HttpServletRequest) request);
-        User aux = repo.findByName(user);
-        String[] roles = aux.getRoles().stream().map(role -> role.getName()).collect(Collectors.toList())
-                .toArray(new String[aux.getRoles().size()]);
-
+        String[] roles = null;
+        try {
+            User aux = repo.findByEmail(user);
+            roles = aux.getRoles().stream().map(role -> role.getName()).collect(Collectors.toList())
+                    .toArray(new String[aux.getRoles().size()]);
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         Authentication auth = JwtUtil.getAuthentication((HttpServletRequest) request, roles);
         SecurityContextHolder.getContext().setAuthentication(auth);
         chain.doFilter(request, response);

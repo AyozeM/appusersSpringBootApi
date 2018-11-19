@@ -19,10 +19,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     private UserRepository repository;
 
     @Override
-    public UserDetails loadUserByUsername(String name) throws UsernameNotFoundException {
-        com.cedei.plexus.appusers.models.User usuario = repository.findByName(name);
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        com.cedei.plexus.appusers.models.User usuario = repository.findByEmail(email);
         if (usuario == null) {
-            throw new UsernameNotFoundException(name);
+            throw new UsernameNotFoundException(email);
         }
         return new Usuario(usuario);
     }
