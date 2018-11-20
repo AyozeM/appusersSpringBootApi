@@ -9,10 +9,9 @@ import com.cedei.plexus.appusers.exceptions.java.ResourceExists;
 import com.cedei.plexus.appusers.exceptions.rest.BadRequestException;
 import com.cedei.plexus.appusers.exceptions.rest.ConfictExeption;
 import com.cedei.plexus.appusers.exceptions.rest.NotFoundExeption;
-import com.cedei.plexus.appusers.models.Privilege;
 import com.cedei.plexus.appusers.models.Role;
 import com.cedei.plexus.appusers.models.User;
-import com.cedei.plexus.appusers.services.PrivilegesService;
+import com.cedei.plexus.appusers.services.MailService;
 import com.cedei.plexus.appusers.services.RolesService;
 import com.cedei.plexus.appusers.services.UserService;
 
@@ -51,6 +50,9 @@ public class UsersController extends Controller implements ControllerInterface {
 
     @Autowired
     RolesService roleService;
+
+    @Autowired
+    MailService mailService;
 
     /**
      * Constructor
@@ -189,19 +191,18 @@ public class UsersController extends Controller implements ControllerInterface {
     @PostMapping("register")
     @ApiOperation(value = "Añade un nuevo usuario básico de la web", response = User.class)
     public ResponseEntity<?> createAccount(RequestEntity<?> request) {
-        ResponseEntity response;
+        ResponseEntity<?> response;
         User newUser;
         try {
             checkEmptyBody(request.getBody());
             newUser = converter.convertValue(request.getBody(), User.class);
 
-            
             List<Role> roleList = new ArrayList<>(Arrays.asList(roleService.getById(4)));
 
             newUser.setRoles(roleList);
-            newUser.setPassword("random");
+            newUser.setPassword(this.service.randomPassword());
             newUser.setId(0);
-            
+            mailService.sendRegistrationEmail("susosapito@gmail.com", newUser.getEmail(), newUser.getPassword());
             response = new ResponseEntity<User>(this.service.add(newUser), HttpStatus.OK);
         } catch (EmptyBodyException e) {
             response = new ResponseEntity<BadRequestException>(new BadRequestException(), HttpStatus.BAD_REQUEST);

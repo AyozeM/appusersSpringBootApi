@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <style>
+        .body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+        }
+
+        .inputHeader {
+            font-weight: bold;
+        }
+
+        .section {
+            padding: 1%;
+            color: white;
+            background-color: #007bff;
+        }
+
+        .footer {
+            text-align: right;
+        }
+
+        .separator {
+            border-color:#57585a;
+            width: 98%;
+        }
+        .body,.title{
+            padding: 1% 3%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="body">
+        <h2 class="title">Gracias por registrarte en nuestra aplicación</h2>
+        <hr class="separator">
+        <section class="body">
+            <p>Te espera un mundo lleno de usuarios por descubrir, podrás iniciar sesión en <a href="http://localhost:8081/#/login">esta página</a> </p>
+            <p>
+                <span class="inputHeader">username: </span>
+                <span th:text="${username}"></span>
+            </p>
+            <p>
+                <span class="inputHeader">password: </span>
+                <span th:text="${password}"></span>
+            </p>
+        </section>
+        <div class="section footer">
+            <I class="font-weight-bold">El equipo de plexus</I>
+        </div>
+    </div>
+</body>
+
+</html>

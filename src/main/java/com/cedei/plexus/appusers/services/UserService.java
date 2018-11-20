@@ -7,6 +7,7 @@ import com.cedei.plexus.appusers.exceptions.java.ResourceExists;
 import com.cedei.plexus.appusers.models.Privilege;
 import com.cedei.plexus.appusers.models.Role;
 import com.cedei.plexus.appusers.models.User;
+import com.cedei.plexus.appusers.utils.PasswordGenerator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +28,8 @@ public class UserService extends ServiceUtils {
     
     @Autowired
     UserRepository repository;
+
+    private PasswordGenerator passwordGenerator = new PasswordGenerator();
 
     final Logger logger = LoggerFactory.getLogger(ServiceUtils.class);
 
@@ -143,9 +146,13 @@ public class UserService extends ServiceUtils {
         return String.format("%s %d has been remove sucessfully", this.resource, id);
     }
 
+    /**
+     * Obtiene el nivel de autoridad de un usuario en la aplicacion
+     * @param name nombre de usuario (email)
+     * @return nivel de autoridad
+     */
     public Integer getAuthority(String name){
         User aux = repository.findByEmail(name);
-        //User aux = repository.findByName(name);
         Integer sumPrivi = 0;
         for (Role role : aux.getRoles()) {
             for (Privilege privilege : role.getPrivileges()) {
@@ -156,6 +163,10 @@ public class UserService extends ServiceUtils {
             }
         }
         return sumPrivi;
+    }
+
+    public String randomPassword(){
+        return this.passwordGenerator.generatePassword();
     }
 
 }
