@@ -108,6 +108,7 @@ public class PrivilegesService extends ServiceUtils {
             Privilege dbPrivilege = (Privilege) this.exists(toUpdate.getId(), true, repository).get();
             dbPrivilege.setName(toUpdate.getName());
             dbPrivilege.setRoles(toUpdate.getRoles());
+            dbPrivilege.setAuthorization(toUpdate.getAuthorization());
             toReturn = repository.save(dbPrivilege);
         } catch (ResourceExists e) {
             e.printStackTrace();
