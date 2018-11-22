@@ -202,7 +202,7 @@ public class UsersController extends Controller implements ControllerInterface {
             newUser.setRoles(roleList);
             newUser.setPassword(this.service.randomPassword());
             newUser.setId(0);
-            mailService.sendRegistrationEmail("susosapito@gmail.com", newUser.getEmail(), newUser.getPassword());
+            mailService.sendRegistrationEmail(newUser.getEmail(), newUser.getEmail(), newUser.getPassword());
             response = new ResponseEntity<User>(this.service.add(newUser), HttpStatus.OK);
         } catch (EmptyBodyException e) {
             response = new ResponseEntity<BadRequestException>(new BadRequestException(), HttpStatus.BAD_REQUEST);
